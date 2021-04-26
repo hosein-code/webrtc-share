@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #video {
+        width: 200px;
+        height: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <video controls id="video"></video>
+    <script>
+      navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+      
+      window.navigator.getUserMedia(
+        { audio: true, video: true },
+        gotUserMedia,
+        didntGotUserMedia
+      );
+      const video = document.querySelector("#video");
+
+      function gotUserMedia(stream) {
+        const t = stream.getVideoTracks()[0]
+        
+        console.log(JSON.stringify(t.getCapabilities()));
+        // console.log(stream);
+        // console.dir(document.querySelector("#video"));
+
+        // const setting = {
+        //   mandatory: { aspectRatio: 1.3333333333 },
+        //   optional: [{ width: { min: 640 }}, { height: { max: 400 } }]
+        // }
+
+        const setting = { aspectRatio: 1.7777777778 } 
+        const promise = t.applyConstraints(setting)
+        promise.then((res) => {
+          console.log(t.getSettings());
+        })
+        try {
+          video.srcObject = stream;
+        } catch (e) {
+          video.src = window.URL.createObjectURL(stream);
+        }
+        // document.querySelector("#video").src = s;
+        // console.log(s.getAudioTracks().length);
+        // console.log(s.getVideoTracks().length);
+      }
+
+      function didntGotUserMedia(err) {
+        console.log(err);
+      }
+    </script>
+  </body>
+</html>
