@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>local connect</title>
+  <style>
+    .video-box {
+      display: flex;
+    }
+    .video-box video {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <button id="start">start</button>
+    <button id="call">call</button>
+    <button id="end">end</button>
+  </div>
+  <div class="video-box">
+    <video id="clientA" autoplay src=""></video>
+    <video id="clientB" autoplay src=""></video>
+  </div>
+
+</body>
+<script>
+  const clientA = document.querySelector("#clientA")
+  const clientB = document.querySelector("#clientB")
+  const start = document.querySelector("#start")
+  const call = document.querySelector("#call")
+  const end = document.querySelector("#end")
+
+  let localStream = null
+  let pc1,pc2
+
+  start.addEventListener("click",startFn)
+  call.addEventListener("click",connection)
+  end.addEventListener("click",() => {
+    pc1.close()
+    pc2.close()
+    pc1 = null
+    pc2 = null
+  })
+
+  function startFn() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      console.log("不支持getUserMedia");
+      return
+    }
+    
+    getLocalStream()
+  }
+
+  function getLocalStream() {
+    const constraints = {
+      video: true,
+      audio: true
+    }
+    navigator.mediaDevices.getUserMedia(constraints)
+    .then(stream => {
+       clientA.srcObject = stream
+       localStream = stream
+    }).catch(err => {
+      console.log(err);
+    })
+  }
+
+  function connection() {
+    // 创建p2p链接
+    pc1 = new RTCPeerConnection()
+    pc2 = new RTCPeerConnection()
+    
+    // 候选者
+    pc1.onicecandidate = (e) => {
+      pc2.addIceCandidate(e.candidate)
+    }
+    
+    pc2.onicecandidate = (e) => {
+      pc1.addIceCandidate(e.candidate)
+    }
+    pc2.ontrack = getRemoteStream
+
+    localStream.getTracks().forEach(track => {
+      pc1.addTrack(track, localStream)
+    });
+
+    pc1.createOffer({
+      offerToReceiveAudio: 1,
+      offerToReceiveVideo: 1
+    }).then((localDesc) => {
+      console.log("---sdp---", localDesc.sdp);
+      pc1.setLocalDescription(localDesc)
+      // 发送信令
+      // pc2接收到desc
+      pc2.setRemoteDescription(localDesc)
+
+      pc2.createAnswer().then(answer => {
+        pc2.setLocalDescription(answer)
+        // 发送信令
+        // pc1接收到desc
+        pc1.setRemoteDescription(answer)
+      }).catch(err => {
+        console.log(err);
+      })
+    }).catch(err => {
+      console.log(err);
+    })
+  }
+
+  function getRemoteStream(e) {
+    clientB.srcObject = e.streams[0]
+  }
+</script>
+</html>

@@ -107,12 +107,6 @@ MediaStreamTrack API 参考地址：https://developer.mozilla.org/zh-CN/docs/Web
 
   API 参考地址: https://developer.mozilla.org/zh-CN/docs/Web/API/MediaDevices/getDisplayMedia
 
-## 链接流程
-
-**C/S 链接流程**
-
-**WebRTC 链接流程**
-
 ## 信令服务器
 
 **作用**
@@ -169,7 +163,7 @@ NAT(Network Address Translation,网络地址转换)，也叫做网络掩蔽或�
 - https://baijiahao.baidu.com/s?id=1683718255812132596&wfr=spider&for=pc
 
 ### NAT穿越
-  在现实网络环境中，大多数计算机主机都位于防火墙或NAT之后，只有少部分主机能够直接接入Internet。很多时候，我们希望网络中的两台主机能够直接进行通信，即所谓的P2P通信，而不需要其他公共服务器的中转。由于主机可能位于防火墙或NAT之后，在进行P2P通信之前，我们需要进行检测以确认它们之间能否进行P2P通信以及如何通信。这种技术通常称为NAT穿透（NAT Traversal）。 
+  在WebRTC中，很多时候，我们希望网络中的两台主机能够直接进行通信，即所谓的P2P通信，而不需要其他公共服务器的中转。但是在现实网络环境中，大多数计算机主机都位于防火墙或NAT之后，只有少部分主机能够直接接入Internet。由于主机可能位于防火墙或NAT之后，在进行P2P通信之前，我们需要进行检测以确认它们之间能否进行P2P通信以及如何通信。这种技术通常称为NAT穿透（NAT Traversal）。 
 
 **STUN**  
   STUN是一种网络协议，它允许应用程序发现它们与公共互联网之间存在的NAT和防火墙及其他类型。它也可以让应用程序确定NAT分配给它们的公网IP地址和端口号。STUN是一种Client/Server的模式，最开始在RFC3489中定义，现在已经被RFC5389取代。
@@ -191,6 +185,15 @@ NAT(Network Address Translation,网络地址转换)，也叫做网络掩蔽或�
 
 __候选者__
 
+__SDP__
+
 ### 媒体协商过程
+![avatar](./images/mtxsgc.png)
+
+
+
+### 端对端链接过程
+![avatar](./images/dddlj.png)
+
 
 
